@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'Goal.dart';
-import 'GoalsRepository.dart';
-import 'Strings.dart';
+import 'package:flutter_study/data/goal.dart';
+import 'package:flutter_study/data/goals_repository.dart';
+import 'package:flutter_study/data/strings.dart';
 
 class AddGoalBLoC {
   AddGoalBLoC(this._repository);
@@ -13,16 +13,16 @@ class AddGoalBLoC {
 
   Stream<AddGoalState> get stream => _addGoalStreamController.stream;
 
-  void addGoal(String title, int dateStamp) {
-    if (title != null && title.isNotEmpty && dateStamp > 0) {
-      var goal = Goal.named(title, dateStamp);
+  void addGoal(String title, DateTime date) {
+    if (title != null && title.isNotEmpty && date.millisecondsSinceEpoch > 0) {
+      var goal = Goal.named(title, date);
       _addGoalStreamController.sink.add(AddGoalState._createGoal(goal));
       _repository.addGoal(goal);
     } else {
       if (title == null || title.isEmpty)
         _addGoalStreamController.sink.add(AddGoalState._error(Strings.titleShouldntBeEmpty));
 
-      if (dateStamp < 0)
+      if (date.millisecondsSinceEpoch == 0)
         _addGoalStreamController.sink.add(AddGoalState._error(Strings.dateSbouldBeFilled));
     }
   }

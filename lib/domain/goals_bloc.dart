@@ -1,8 +1,8 @@
 
 import 'dart:async';
 
-import 'Goal.dart';
-import 'GoalsRepository.dart';
+import 'package:flutter_study/data/goal.dart';
+import 'package:flutter_study/data/goals_repository.dart';
 
 class GoalsBLoC {
   GoalsBLoC(this._repository);

@@ -1,9 +1,9 @@
 
-import 'Goal.dart';
+import 'package:flutter_study/data/goal.dart';
 
 class GoalsRepository {
   static final GoalsRepository _goalsRepository = new GoalsRepository._internal();
-  factory GoalsRepository() {
+  factory GoalsRepository.instance() {
     return _goalsRepository;
   }
   GoalsRepository._internal();

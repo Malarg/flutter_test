@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'AddGoalBLoC.dart';
-import 'GoalsRepository.dart';
-import 'Strings.dart';
+import 'package:flutter_study/domain/add_goal_bloc.dart';
+import 'package:flutter_study/data/goals_repository.dart';
+import 'package:flutter_study/data/strings.dart';
 
 class AddGoalScreen extends StatefulWidget {
-  final GoalsRepository _repository = new GoalsRepository();
 
   @override
   State<StatefulWidget> createState() {
@@ -15,23 +14,24 @@ class AddGoalScreen extends StatefulWidget {
 
 class _AddGoalScreenState extends State<AddGoalScreen> {
   String title;
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.fromMicrosecondsSinceEpoch(0);
   static const String defaultDisplayedDate = Strings.selectDate;
   String displayedDate = defaultDisplayedDate;
   AddGoalBLoC bloc;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GoalsRepository _repository = new GoalsRepository.instance();
 
   @override
   void initState() {
-    bloc = AddGoalBLoC(widget._repository);
+    bloc = AddGoalBLoC(_repository);
     super.initState();
   }
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1970, 1),
         lastDate: DateTime(2101));
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -70,7 +70,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
       )),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
-            {bloc.addGoal(title, displayedDate == Strings.selectDate ? -1 : selectedDate.millisecondsSinceEpoch)},
+            {bloc.addGoal(title, selectedDate)},
         tooltip: Strings.addGoal,
         child: Icon(Icons.check),
       ),
