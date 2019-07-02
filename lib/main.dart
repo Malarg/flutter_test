@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_study/Goal.dart';
-
 import 'AddGoalScreen.dart';
 import 'GoalsBLoC.dart';
 import 'GoalsRepository.dart';
+import 'Strings.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,11 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: Strings.flutterDemo,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Мои цели'),
+      home: MyHomePage(title: Strings.myGoals),
     );
   }
 }
@@ -79,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           stream: bloc.stream,)),
       floatingActionButton: FloatingActionButton(
         onPressed: _addGoal,
-        tooltip: 'Добавить цель',
+        tooltip: Strings.addGoal,
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
@@ -90,8 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return ListView.builder(itemBuilder: (BuildContext context, int index) {
       return Column(
           children:[
-            Text(goals[index].title),
-            Text(goals[index].getTimeBeforeDeadline(currentTimestamp))
+            Text(goals[index].title, style: TextStyle(fontWeight: FontWeight.bold),),
+            Text(goals[index].getTimeBeforeDeadline(currentTimestamp), style: TextStyle(fontStyle: FontStyle.italic))
           ]
       );
     },
@@ -100,6 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildEmptyScreen() {
-    return Center(child: (Text("Пока в твоей жизни нет целей :(")));
+    return Center(child: (Text(Strings.youHaventGoalsInYourLife)));
   }
 }

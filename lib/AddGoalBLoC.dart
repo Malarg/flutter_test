@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'Goal.dart';
 import 'GoalsRepository.dart';
+import 'Strings.dart';
 
 class AddGoalBLoC {
   AddGoalBLoC(this._repository);
@@ -13,12 +14,16 @@ class AddGoalBLoC {
   Stream<AddGoalState> get stream => _addGoalStreamController.stream;
 
   void addGoal(String title, int dateStamp) {
-    if (title != null && title.isNotEmpty) {
+    if (title != null && title.isNotEmpty && dateStamp > 0) {
       var goal = Goal.named(title, dateStamp);
       _addGoalStreamController.sink.add(AddGoalState._createGoal(goal));
       _repository.addGoal(goal);
     } else {
-      _addGoalStreamController.sink.add(AddGoalState._error("Название не должно быть пустым"));
+      if (title == null || title.isEmpty)
+        _addGoalStreamController.sink.add(AddGoalState._error(Strings.titleShouldntBeEmpty));
+
+      if (dateStamp < 0)
+        _addGoalStreamController.sink.add(AddGoalState._error(Strings.dateSbouldBeFilled));
     }
   }
 

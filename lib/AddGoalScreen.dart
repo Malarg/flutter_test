@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'AddGoalBLoC.dart';
 import 'GoalsRepository.dart';
+import 'Strings.dart';
 
 class AddGoalScreen extends StatefulWidget {
   final GoalsRepository _repository = new GoalsRepository();
@@ -15,6 +16,8 @@ class AddGoalScreen extends StatefulWidget {
 class _AddGoalScreenState extends State<AddGoalScreen> {
   String title;
   DateTime selectedDate = DateTime.now();
+  static const String defaultDisplayedDate = Strings.selectDate;
+  String displayedDate = defaultDisplayedDate;
   AddGoalBLoC bloc;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -33,6 +36,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        displayedDate = selectedDate.toLocal().toString();
       });
     }
   }
@@ -42,7 +46,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: Text("Добавить цель"),
+        title: Text(Strings.addGoal),
       ),
       body: SafeArea(
           child: StreamBuilder<AddGoalState>(
@@ -51,7 +55,9 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
             return _buildInitState();
           }
           if (snapshot.data is AddGoalError) {
-            WidgetsBinding.instance.addPostFrameCallback((_) => _showMessage('Название не должно быть пустым'));
+            var message = (snapshot.data as AddGoalError).message;
+            WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _showMessage(message));
             return _buildInitState();
           }
           if (snapshot.data is CreatedGoalState) {
@@ -63,35 +69,29 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
         stream: bloc.stream,
       )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {bloc.addGoal(title, selectedDate.millisecondsSinceEpoch)},
-        tooltip: 'Добавить цель',
+        onPressed: () =>
+            {bloc.addGoal(title, displayedDate == Strings.selectDate ? -1 : selectedDate.millisecondsSinceEpoch)},
+        tooltip: Strings.addGoal,
         child: Icon(Icons.check),
       ),
     );
   }
 
   Widget _buildInitState() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TextField(
-            decoration: InputDecoration(
-                border: InputBorder.none, hintText: 'Название цели'),
-            onChanged: (String t) => title = t,
-          ),
-          Text("${selectedDate.toLocal()}"),
-          SizedBox(
-            height: 20.0,
-          ),
-          RaisedButton(
-            onPressed: () => _selectDate(context),
-            child: Text('Select date'),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        TextField(
+          decoration: InputDecoration(
+              border: InputBorder.none, hintText: Strings.goalTitle, contentPadding: EdgeInsets.only(left: 16.0, top: 24.0)),
+          onChanged: (String t) => title = t,
+        ),
+        GestureDetector(child: Padding(padding: EdgeInsets.only(left: 16.0, top: 16.0), child: Text(displayedDate)) , onTap: () => _selectDate(context)),
+      ],
     );
   }
+
   void _showMessage(String message) {
     scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));
   }
